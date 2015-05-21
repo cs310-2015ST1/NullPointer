@@ -1,6 +1,5 @@
 # NullPointer
-# Touristy App (Name subject to change)
-
+# Touristy
 # TODO for Friday May 22nd
 
 
