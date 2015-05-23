@@ -10,14 +10,8 @@ As a local Vancouverite, I want to click a café icon on the map and see recentl
 in that café in order to see menu items.
 
 Definition of Done:
-•	Test that map café icon is clickable and a dialog box will appear with name information and the option to view recent instagrammed photos
+•	Test that map café icon is clickable and a dialog box will appear with name information and the 
+  option to view recent instagrammed photos
 •	Test the Instagram API gives recently instagrammed photos to a specific location
 •	Test that user is able to scroll through photos (at least 10)
-
-
-As a user, I want to login to my Instagram account.
-
-Definition of Done:
-•	Test that user can login to their account Instagram
-•	Test that Instagram gives us permissions to like and follow on poster’s behalf
 
