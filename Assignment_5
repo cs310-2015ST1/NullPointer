@@ -1,0 +1,30 @@
+
+
+* How would you add a new URL/route? 
+	* Modify urls.py in the app folder and add your views.py to add the page location.
+* How would you add a new UI widget? 
+	* You can do it in the html code of the page, or in the views.py.
+	* Then to obtain its behavior you need forms.py
+* How would you add a new login system? 
+	* Add authentication packgages to  settings.py
+	* Lay out UserProfile infrastructure.
+	* Create two classes in forms.py
+	* Use the special code that they posted in tango with django!
+	* Create the registration template.
+* Where’s the logic to handle each of the different routes/URLs? 
+	* It's in..... urls.py of the project directory and also of application directory.
+* How do you bring in data? 
+	* By creating html forms and obaining the data from those forms on your views.py.
+* Where’s the data stored?
+	* By defualt a sqlite db. 
+* How is data stored? 
+	* In the sqlite table???
+* How do you query data?
+	* Send a query request to the database and uhh parse it...
+* How do you define the schema for data? 
+	* Using data structures??? To store the information? could be strings, lists, maps, etc.
+* How do you render a page?
+	* Import the render class on views. from django.shortcuts.
+* What is an API? How is your app going to communicate with the APIs relevant to your project?
+	* An API is a application program interface, which allows a depoloyed program to communicate with
+		an external application.
