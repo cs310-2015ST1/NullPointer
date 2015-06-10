@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Touristy Home</title>
+    </head>
+
+    <body>
+        {% if user.is_authenticated %}
+        <h1>Hello {{ user.username }}, welcome back to Touristy!</h1>
+        {% else %}
+        <h1>Hello Anon, welcome to Touristy!</h1>
+        {% endif %}
+
+    <div id="footer">
+            <h6 id="footertext">Copyright 2015 lolcat, all rights reserved. <br>
+            {% if not user.is_authenticated %}
+            <a href="/login">Login</a> <br>
+            <a href="/login/register">Register</a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <a href="/login/logout">Logout</a>
+            {% endif %}
+
+            </h6>
+        </div>
+    </body>
+
+</html>
