@@ -1,9 +1,19 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
+from instagram.client import InstagramAPI
 
 # Create your views here.
 from login.forms import UserForm, UserProfileForm
+
+CONFIG = {
+    'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
+    'client_secret': 'b1871feaade14048b479907e02784883',
+    'redirect_uri': 'http://127.0.0.1:8000/home'
+}
+unauthenticated_api = InstagramAPI(**CONFIG)
+
+
 
 def register(request):
 
@@ -103,6 +113,13 @@ def login_view(request):
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render(request, 'login/login.html', {})
+
+def instagram_login(request):
+    try:
+        url = unauthenticated_api.get_authorize_url(scope=["likes","comments"])
+        return HttpResponseRedirect(url)
+    except Exception as e:
+        print(e)
 
 # Thank you Kieran for this function.
 # www.kierancollery.com
