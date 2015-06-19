@@ -2,7 +2,7 @@
 <html>
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
-  <!--css style taken from 
+  <!--css style taken from
     https://developers.google.com/maps/documentation/javascript/examples/places-searchbox -->
   <head>
     <title>Touristy Home</title>
@@ -67,7 +67,7 @@
       var VANCOUVER = new google.maps.LatLng(49.2827,-123.1207);
       var mapOptions = {
         mapTypeId: google.maps.MapTypeId.ROADMAP
-        
+
       }
       var map = new google.maps.Map(mapCanvas, mapOptions)
 
@@ -147,8 +147,9 @@ function InstagramInit(lat, lng) {
     document.getElementById('lat').value = lat;
     document.getElementById('lng').value = lng;
     document.getElementById("instagram_lat_lng").submit();
-    return false;
 }
+
+
 </script>
 </head>
 
@@ -158,15 +159,25 @@ function InstagramInit(lat, lng) {
 <h1>Hello Anon, welcome to Touristy!</h1>
 {% endif %}
 
-<form id="instagram_lat_lng"  method="post">
-{% csrf_token %}
-<input type="hidden" id="lat" name="lat" value="" />
-<input type="hidden" id="lng" name="lng" value="" />
 
-</form>
 <input id="pac-input" class="controls" type="text" placeholder="Search Box">
 <div id="map-canvas"></div>
 <div id="instagram">
+
+
+<form id="instagram_lat_lng" method="post">
+{% csrf_token %}
+<input type="hidden" id="lat" name="lat" value="" />
+<input type="hidden" id="lng" name="lng" value="" />
+    {% if access_token %}
+        <input type="hidden" id="token" name="token" value="{{ access_token }}" />
+        <h3>{{ access_token }}</h3>
+    {% else %}
+        <input type="hidden" id="token" name="token" value="" />
+        <h3>No access token!</h3>
+    {% endif %}
+</form>
+
     {% if photos %}
         {% for photo in photos  %}
             <img src="{{ photo }}" alt="INSTA PHOTOS" width="150">
