@@ -13,8 +13,9 @@ session_opts = {
 CONFIG = {
     'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
     'client_secret': 'b1871feaade14048b479907e02784883',
-    'redirect_uri': 'http://127.0.0.1:8000/'
+    'redirect_uri': 'http://128.189.139.253/'
 }
+
 unauthenticated_api = InstagramAPI(**CONFIG)
 
 def index(request):
@@ -45,7 +46,7 @@ def index(request):
         else:
             code = request.GET.get("code")
             if not code:
-                return HttpResponse('missing code')
+                return HttpResponse('missing code. \n Please ensure you are logged in instagram before searching for places!')
             try:
                 access_token, user_info = unauthenticated_api.exchange_code_for_access_token(code)
                 if not access_token:
@@ -67,5 +68,6 @@ def index(request):
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render(request, 'home/index.html', {})
-
-
+    
+    
+    
