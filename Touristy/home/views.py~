@@ -46,7 +46,7 @@ def index(request):
         else:
             code = request.GET.get("code")
             if not code:
-                return HttpResponse('missing code')
+                return HttpResponse('missing code. \n Please ensure you are logged in instagram before searching for places!')
             try:
                 access_token, user_info = unauthenticated_api.exchange_code_for_access_token(code)
                 if not access_token:

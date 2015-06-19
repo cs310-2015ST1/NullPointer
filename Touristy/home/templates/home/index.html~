@@ -177,18 +177,31 @@
 google.maps.event.addDomListener(window, 'load', initialize);
 
 function InstagramInit(lat, lng) {
-    document.getElementById('lat').value = lat;
-    document.getElementById('lng').value = lng;
-    document.getElementById("instagram_lat_lng").submit();
+    var myParam = location.search.split('code=')[1];
+    if (!myParam)
+    {
+        document.write("Please Login to instagram first. Redirecting in 3 seconds.");
+        setTimeout('Redirect()', 3000);
+    }
+    else
+    {
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+        document.getElementById("instagram_lat_lng").submit();
+    }
 }
 
+function Redirect()
+{
+   window.location="/login/instagram_login/";
+}
 
 </script>
 </head>
 
 <div id="top-div">
 {% if user.is_authenticated %}
-<h1>Hello {{ user.username }}, welcome back to Touristy! {{ user.picture }} l</h1> <br>
+<h1>Hello {{ user.username }}, welcome back to Touristy! {{ user.picture }} </h1> <br>
 {% else %}
 <h1>Hello Anon, welcome to Touristy!</h1><br>
 {% endif %}
