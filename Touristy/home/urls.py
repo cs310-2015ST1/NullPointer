@@ -1,9 +1,8 @@
 __author__ = 'ch0l1n3'
 from django.conf.urls import patterns, url
 
-from home import views
+import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
-
 )
