@@ -143,39 +143,92 @@
               anchor: new google.maps.Point(17, 34),
               scaledSize: new google.maps.Size(25, 25)
             };
-          // Create a marker for each place.
-          var marker = new google.maps.Marker({
-            map: map,
-            icon: image,
-            title: place.name,
-            position: place.geometry.location,
-            clickable: true,
-            address: place.formatted_address,
-            phone: place.formatted_phone_number,
-            placeID:place.place_id
-            //photo: place.photos
-          });
 
-           var infowindow = new google.maps.InfoWindow({
-               content: ""
-           });
+           //place details search taken from
+           // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
-           google.maps.event.addListener(marker, 'click', function(){
-           var dataString = '<h1>'+ this.getTitle()+ '</h1>'
-                                  +'<p>'+this.address +'</p>'
-                           +'<P>P: '+this.phone+ '</p>'
-                           +'<P>'+this.placeID+'</p>'
-                           //+'<img src ='+ photo[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
-                   //+'alt =\"no photo available\"'+'align=\"left\">'
+           //extract the place-id to get details about the place.
+           var placeId = place.place_id;
+           var request = {placeId:placeId};
+           //
+           var infowindow = new google.maps.InfoWindow();
+            var service = new google.maps.places.PlacesService(map);
+
+           service.getDetails(request, function(place, status){
+                    if (status == google.maps.places.PlacesServiceStatus.OK){
+                         // Create a marker for each place.
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            icon: image,
+                            title: place.name,
+                            position: place.geometry.location,
+                            clickable: true,
+                            address: place.formatted_address,
+                            phone: place.formatted_phone_number,
+                            placeID:place.place_id,
+                            photo: place.photos,
+                            hours: place.opening_hours.weekday_text,
+                            rating:place.rating
+                            });
+
+                        //makes sure there's a photo in the array returned
+                        var photoString;
+                        if(place.photos){
+                         photoString = '<p><img src ='+ place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
+                            +'alt =\"no photo available\"'+'align=\"left\"><br></p>'
+                        }
+                        else{
+                        photoString = '<p>No display picture available, try getting more photos!<br></p>'
+                        }
+
+                        var hourString;
+                        if(place.opening_hours.weekday_text){
+                            hourString =
+                           '<p><i><ins>hours:</ins></i></p> '
+                           +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
+                           +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
+
+                        }else hourString = '<p>hours unavailable<br></p>';
+                        //ratings, if available
+                        var ratingString
+                        if(place.rating){
+                            ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
+
+                        }else ratingString = 'ratings unavailable';
+
+                         google.maps.event.addListener(marker, 'click', function(){
+
+                             //now we make the layout for the info window
+                            var dataString = '<h1>'+ this.getTitle()+ '</h1>'
+                           +'<p>'+this.address +'</p>'
+                           +'<P>P: '+this.phone+ '<br><br></p>'
+                           +ratingString
+                           +hourString
+                           +photoString
+                           //the button for getting more photos
                            +'<button onclick="InstagramInit(\''
                            + this.getPosition().lat()
                            + '\', \''
                            +this.getPosition().lng()
-                           +'\')">Get Photos!</button><br>' ;
+                           +'\')">more Photos!</button><br>' ;
 
                infowindow.setContent(dataString);
                infowindow.open(map, this);
            });
+
+
+                    }});
+
+
+
+
+
+
         markers.push(marker);
 
         bounds.extend(place.geometry.location);
