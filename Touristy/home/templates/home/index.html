@@ -132,7 +132,7 @@
        markers = [];
 
        //setting upper and lower bounds for the map pan;
-      var contentString = "<a href=\"/home/\">Get Photos!</a><br />";
+      //var contentString = "<a href=\"/home/\">Get Photos!</a><br />";
 
         var bounds = new google.maps.LatLngBounds();
        for (var i = 0, place; place = places[i]; i++) {
@@ -149,15 +149,31 @@
             icon: image,
             title: place.name,
             position: place.geometry.location,
-            clickable: true
+            clickable: true,
+            address: place.formatted_address,
+            phone: place.formatted_phone_number,
+            placeID:place.place_id
+            //photo: place.photos
           });
 
            var infowindow = new google.maps.InfoWindow({
                content: ""
            });
 
-           google.maps.event.addListener(marker, 'click', function() {
-               infowindow.setContent('<button onclick="InstagramInit(\'' + this.getPosition().lat() + '\', \'' + this.getPosition().lng() + '\')">Get Photos!</button><br>' + this.getTitle());
+           google.maps.event.addListener(marker, 'click', function(){
+           var dataString = '<h1>'+ this.getTitle()+ '</h1>'
+                                  +'<p>'+this.address +'</p>'
+                           +'<P>P: '+this.phone+ '</p>'
+                           +'<P>'+this.placeID+'</p>'
+                           //+'<img src ='+ photo[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
+                   //+'alt =\"no photo available\"'+'align=\"left\">'
+                           +'<button onclick="InstagramInit(\''
+                           + this.getPosition().lat()
+                           + '\', \''
+                           +this.getPosition().lng()
+                           +'\')">Get Photos!</button><br>' ;
+
+               infowindow.setContent(dataString);
                infowindow.open(map, this);
            });
         markers.push(marker);
