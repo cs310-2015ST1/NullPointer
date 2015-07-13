@@ -13,9 +13,9 @@ session_opts = {
 }
 
 CONFIG = {
-    'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
-    'client_secret': 'b1871feaade14048b479907e02784883',
-    'redirect_uri': 'http://touristy.no-ip.org/'
+    'client_id': '1affff744df74fd08d195007f0dca248',
+    'client_secret': '25942534c36046909ad8278eb70eadcd',
+    #'redirect_uri': 'http://touristy.no-ip.org/'
 }
 unauthenticated_api = InstagramAPI(**CONFIG)
 
