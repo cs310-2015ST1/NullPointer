@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from instagram.client import InstagramAPI
 from django.http import HttpResponseRedirect, HttpResponse
+from datetime import datetime
+from models import Popularity
 
 # Create your views here.
 
@@ -11,12 +13,39 @@ session_opts = {
 }
 
 CONFIG = {
-    'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
-    'client_secret': 'b1871feaade14048b479907e02784883',
-    'redirect_uri': 'http://touristy.no-ip.org/'
+    'client_id': '1affff744df74fd08d195007f0dca248',
+    'client_secret': '25942534c36046909ad8278eb70eadcd',
+    'redirect_uri': 'http://127.0.0.1:8000/home/'
 }
 
 unauthenticated_api = InstagramAPI(**CONFIG)
+
+
+def calculate_popularity(times):
+
+    # times = ['2015-07-09 21:07:27', '2015-06-09 21:07:27', '2015-05-09 21:07:27', '2015-04-09 21:07:27',
+    #          '2015-07-09 21:07:27', '2015-06-09 21:07:27', '2015-05-09 21:07:27', '2015-04-09 21:07:27',
+    #          '2015-07-09 21:07:27', '2015-01-22 21:01:22', '2015-05-09 21:07:27', '2015-04-09 21:07:27']
+
+    if len(times) < 10:
+        return "low"
+
+    time = times[9]
+    time = time[0:10]
+    tenth_photo_date = datetime(time[2:4],time[5:7],time[8:10])
+
+    current_date = datetime.now()
+    # current_time = current_time[0:10]
+    # current_time_days = int(current_time[2:4])*365+int(current_time[5:7])*30+int(current_time[8:10])
+    # print current_time_days
+
+    if (current_date - datetime.timedelta(month=1)) < tenth_photo_date:
+        return "high"
+    elif (current_date - datetime.timedelta(month=6)) < tenth_photo_date:
+        return "med"
+    else:
+        return "low"
+
 
 def index(request):
     if request.method == 'POST':
@@ -38,9 +67,19 @@ def index(request):
                 print "Real ones ", lat, lng
                 media_search = api.media_search(lat=lat, lng=lng, distance=100)
                 photos = []
+                times = []
                 for media in media_search:
                     photos.append(media.get_standard_resolution_url())
-                context_dict = {'access_token': access_token, 'photos': photos}
+                    times.append(media.created_time)
+                location_popularity = calculate_popularity(times)
+                p = Popularity.objects.create(
+                    lat=lat,
+                    lng=lng,
+                    pop=location_popularity,
+                )
+                p.save()
+                print location_popularity
+                context_dict = {'access_token': access_token, 'photos': photos, 'location_popularity': location_popularity}
             except Exception as e:
                 print(e)
         else:
@@ -57,9 +96,19 @@ def index(request):
                 print "Real ones ", lat, lng
                 media_search = api.media_search(lat=lat, lng=lng, distance=100)
                 photos = []
+                times = []
                 for media in media_search:
                     photos.append(media.get_standard_resolution_url())
-                context_dict = {'access_token': access_token, 'photos': photos}
+                    times.append(media.created_time)
+                location_popularity = calculate_popularity(times)
+                p = Popularity.objects.create(
+                    lat=lat,
+                    lng=lng,
+                    pop=location_popularity,
+                )
+                p.save()
+                print location_popularity
+                context_dict = {'access_token': access_token, 'photos': photos, 'location_popularity': location_popularity}
             except Exception as e:
                 print(e)
 
@@ -68,6 +117,3 @@ def index(request):
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
         return render(request, 'home/index.html', {})
-    
-    
-    

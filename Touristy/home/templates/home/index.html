@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+{% load staticfiles %}
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
   <!--css style taken from 
@@ -215,7 +216,8 @@
                            + this.getPosition().lat()
                            + '\', \''
                            +this.getPosition().lng()
-                           +'\')">more Photos!</button><br>' ;
+                           +'\')">more Photos!</button><br>'
+                           + '<img src="{% static "images/firehigh.png" %}" alt="Picture of Fire" />';
 
                infowindow.setContent(dataString);
                infowindow.open(map, this);
