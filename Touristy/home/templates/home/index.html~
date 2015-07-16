@@ -311,7 +311,7 @@ function Redirect()
   <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
     To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
     <br> 
-    {{ weather }}<br>
+    Vancouver's Weather: {{ weather }}<br>
     <br> <br></p>
   </div>
 

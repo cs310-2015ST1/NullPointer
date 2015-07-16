@@ -4,5 +4,5 @@ from home.models import Weather
 
 
 
-admin.site.register(Weather)
+admin.site.register(Wheater)
 

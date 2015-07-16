@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import admin
 
 # Create your models here.
 
@@ -13,6 +14,9 @@ class Favorite(models.Model):
     def __unicode__(self):
         return self.place_name
 
+
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user_profile', 'place_name', 'lat', 'lng', 'content_string')
 
 
 class UserProfile(models.Model):

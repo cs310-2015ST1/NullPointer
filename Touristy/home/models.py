@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.contrib import admin
 # Create your models here.
 
 
@@ -10,3 +11,7 @@ class Weather(models.Model):
 
     def __unicode__(self):
         return self.weather_string
+
+
+class WeatherAdmin(admin.ModelAdmin):
+    list_display = ('date_id', 'weather_string')

@@ -376,6 +376,9 @@ function Redirect()
     </form>
     <a href="/login/logout">Logout</a><br>
     <a href="/login/instagram_login">Login to Instagram</a><br>
+        {% if user.is_superuser %}
+            <a href="/admin">Admin</a><br>
+        {% endif %}
     {% endif %}
     <br>
     <br>
