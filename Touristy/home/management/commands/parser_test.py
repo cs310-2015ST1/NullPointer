@@ -30,7 +30,7 @@ def urlParserTester():
 
     json_string = f.read()
     parsed_json = json.loads(json_string)
-    
+
     #attempt reading JSONObject to see if it's correct
     try:
         forcast_array = parsed_json['forecast']['txt_forecast']['forecastday']
@@ -62,7 +62,6 @@ def urlParserTester():
     f = urllib2.urlopen(test_url)
     json_string = f.read()
     parsed_json = json.loads(json_string)
-
 
     try:
         forcast_array = parsed_json['forecast']['txt_forecast']['forecastday']
