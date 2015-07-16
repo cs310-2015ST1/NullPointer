@@ -137,7 +137,7 @@
             {% if user.is_authenticated %}
                 var favorite_markers = [
                 {% for favorite in user.favorite_set.all %}
-            [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}}",
+            [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}} <br>" + favorite_getPopularity({{favorite.lat}}, {{favorite.lng}}),
                 "{{ favorite.lat }}",
                 "{{ favorite.lng }}"],
             {% endfor %}
@@ -303,6 +303,29 @@
         }
         google.maps.event.addDomListener(window, 'load', initialize);
 
+        function favorite_getPopularity(lat, lng) { 
+            var popularityString = '<img src="{% static "images/firenone.png" %}" alt="Picture of None Fire" />';
+                        for (var i = 0; i < poplats.length; i++) {
+                            console.log((Math.abs(parseFloat(poplats[i]) - lat)));
+                            console.log((Math.abs(parseFloat(poplngs[i]) - lng)));
+                            if ((Math.abs(parseFloat(poplats[i]) - lat) <= 0.00005) &&
+                                    (Math.abs(parseFloat(poplngs[i]) - lng) <= 0.00005)) {
+                                console.log("Got into the if!");
+                                if (popstatuses[i] === "high") {
+                                    popularityString = '<img src="{% static "images/firehigh.png" %}" alt="Picture of High Fire" />';
+                                }
+                                else if (popstatuses[i] === "med") {
+                                    popularityString = '<img src="{% static "images/firemed.png" %}" alt="Picture of Med Fire" />';
+                                }
+                                else if (popstatuses[i] === "low") {
+                                    popularityString = '<img src="{% static "images/firelow.png" %}" alt="Picture of Low Fire" />';
+                                }
+                            }
+                        }
+
+
+            return popularityString; 
+        }
 
         function FavoritedInstagramInit(lat, lng, place_name) {
             myParam = location.search.split('code=')[1];
