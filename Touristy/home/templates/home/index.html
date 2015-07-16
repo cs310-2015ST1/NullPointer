@@ -1,388 +1,460 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
-  <!--css style taken from 
-    https://developers.google.com/maps/documentation/javascript/examples/places-searchbox -->
-  <head>
+<!--css style taken from
+  https://developers.google.com/maps/documentation/javascript/examples/places-searchbox -->
+
+{% load staticfiles %}
+
+{% if popularity_list %}
+{% for popularity in popularity_list %}
+
+<script type="text/javascript">
+    var poplats = [];
+    poplats.push("{{popularity.lat}}");
+    var poplngs = [];
+    poplngs.push("{{popularity.lng}}");
+    var popstatuses = [];
+    popstatuses.push("{{popularity.pop}}");
+</script>
+
+{% endfor %}
+{% else %}
+<script type="text/javascript">
+    var poplats = [];
+    var poplngs = [];
+    var popstatuses = [];
+</script>
+{% endif %}
+
+<head>
     <title>Touristy Home</title>
     <style>
-	html, body, * {
-	    padding: 0;
-	    margin: 0;
-	}
-	html {
-	    width: 100%;
-	    height: 100%;
-	    position: absolute;
-	}
-	#top-div {
-	    background: #C2E0FF;
-	    position: relative;
-	    left: 0;
-	    top: 80%;
-	    bottom: 0;
-	    right: 0;
-	    overflow: hidden;
-	}
-	#map-canvas {
-	    background: #C2E0FF;
-	    position: absolute;
-	    left: 0;
-	    top: 20%;
-	    bottom: 0;
-	    right: 50%;
-	    overflow: hidden;
-	    padding: 2em;
-	}
-	#instagram {
-	    background: #C2E0FF;
-	    position: absolute;
-	    left: 50%;
-	    top: 20%;
-	    bottom: 0;
-	    right: 0;
-	    overflow-y: auto;    
-	    padding: 2em;
-	}
-      .controls {
-        margin-top: 16px;
-        border: 1px solid transparent;
-        border-radius: 2px 0 0 2px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        height: 32px;
-        outline: none;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-      #pac-input {
-        background-color: #fff;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        margin-left: 12px;
-        padding: 0 11px 0 13px;
-        text-overflow: ellipsis;
-        width: 400px;
-      }
-      #pac-input:focus {
-        border-color: #4d90fe;
-      }
-      .pac-container {
-        font-family: Roboto;
-      }
-      #type-selector {
-        color: #fff;
-        background-color: #4d90fe;
-        padding: 5px 11px 0px 11px;
-      }
-      #type-selector label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }
+        html, body, * {
+            padding: 0;
+            margin: 0;
+        }
+        html {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        #top-div {
+            background: #C2E0FF;
+            position: relative;
+            left: 0;
+            top: 80%;
+            bottom: 0;
+            right: 0;
+            overflow: hidden;
+        }
+        #map-canvas {
+            background: #C2E0FF;
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 0;
+            right: 50%;
+            overflow: hidden;
+            padding: 2em;
+        }
+        #instagram {
+            background: #C2E0FF;
+            position: absolute;
+            left: 50%;
+            top: 20%;
+            bottom: 0;
+            right: 0;
+            overflow-y: auto;
+            padding: 2em;
+        }
+        .controls {
+            margin-top: 16px;
+            border: 1px solid transparent;
+            border-radius: 2px 0 0 2px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            height: 32px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        #pac-input {
+            background-color: #fff;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            padding: 0 11px 0 13px;
+            text-overflow: ellipsis;
+            width: 400px;
+        }
+        #pac-input:focus {
+            border-color: #4d90fe;
+        }
+        .pac-container {
+            font-family: Roboto;
+        }
+        #type-selector {
+            color: #fff;
+            background-color: #4d90fe;
+            padding: 5px 11px 0px 11px;
+        }
+        #type-selector label {
+            font-family: Roboto;
+            font-size: 13px;
+            font-weight: 300;
+        }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&"></script>
-  <script>
-  function initialize() {
+    <script>
+        function initialize() {
 
-    var markers = [];
-    var mapCanvas = document.getElementById('map-canvas');
-    var VANCOUVER = new google.maps.LatLng(49.2827,-123.1207);
-    var mapOptions = {
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+            var markers = [];
+            var mapCanvas = document.getElementById('map-canvas');
+            var VANCOUVER = new google.maps.LatLng(49.2827,-123.1207);
+            var mapOptions = {
+                mapTypeId: google.maps.MapTypeId.ROADMAP
 
-    }
-    var map = new google.maps.Map(mapCanvas, mapOptions)
+            }
+            var map = new google.maps.Map(mapCanvas, mapOptions)
 
-    var northEastLatLng = new google.maps.LatLng(49.374374, -123.2741459);
-    var southWestLatLng = new google.maps.LatLng(49.186495, -122.8231339);
-    var defaultBounds = new google.maps.LatLngBounds(northEastLatLng, southWestLatLng);
-    map.fitBounds(defaultBounds);
+            var northEastLatLng = new google.maps.LatLng(49.374374, -123.2741459);
+            var southWestLatLng = new google.maps.LatLng(49.186495, -122.8231339);
+            var defaultBounds = new google.maps.LatLngBounds(northEastLatLng, southWestLatLng);
+            map.fitBounds(defaultBounds);
 
-  /*embedding searchbar taken from google maps documentation,
-  at: https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
-  */
-  var input = (document.getElementById('pac-input'));
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-  var searchBox = new google.maps.places.SearchBox(input);
+            /*embedding searchbar taken from google maps documentation,
+             at: https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
+             */
+            var input = (document.getElementById('pac-input'));
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+            var searchBox = new google.maps.places.SearchBox(input);
 
-      // Listen for the event fired when the user selects an item from the
-  // pick list. Retrieve the matching places for that item.
-  //<button onclick='InstagramInit('{{ favorite.lat }}', '{{ favorite.lng }}', '{{ favorite.place_name }}')'> lol </button>
-  {% if user.is_authenticated %}
-       var favorite_markers = [
-           {% for favorite in user.favorite_set.all %}
-               [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}}",
+            // Listen for the event fired when the user selects an item from the
+            // pick list. Retrieve the matching places for that item.
+            //<button onclick='InstagramInit('{{ favorite.lat }}', '{{ favorite.lng }}', '{{ favorite.place_name }}')'> lol </button>
+            {% if user.is_authenticated %}
+                var favorite_markers = [
+                {% for favorite in user.favorite_set.all %}
+            [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}}",
                 "{{ favorite.lat }}",
                 "{{ favorite.lng }}"],
-           {% endfor %}
-       ];
-       
+            {% endfor %}
+        ];
+
 
         var favorite_infowindow = new google.maps.InfoWindow(), favorite_marker, i;
-        for (i = 0; i < favorite_markers.length; i++) {  
-        favorite_marker = new google.maps.Marker({
-            position: new google.maps.LatLng(favorite_markers[i][1], favorite_markers[i][2]),
-            map: map
-        });
-        google.maps.event.addListener(favorite_marker, 'click', (function(favorite_marker, i) {
-            return function() {
-                favorite_infowindow.setContent(favorite_markers[i][0]);
-                favorite_infowindow.open(map, favorite_marker);
-            }
-        })(favorite_marker, i));
-    }
-        
-  {% endif %}
-
-  google.maps.event.addListener(searchBox, 'places_changed', function(){
-    var places = searchBox.getPlaces();
-
-    if (places.length == 0) {
-      return;
-    }
-    for (var i = 0, marker; marker = markers[i]; i++) {
-      marker.setMap(null);
-    }
-       // For each place, get the icon, place name, and location.
-       markers = [];
-
-       var bounds = new google.maps.LatLngBounds();
-       for (var i = 0, place; place = places[i]; i++) {
-        var image = {
-          url: place.icon,
-          size: new google.maps.Size(71, 71),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(17, 34),
-          scaledSize: new google.maps.Size(25, 25)
-        };
-
-           //place details search taken from
-           // https://developers.google.com/maps/documentation/javascript/examples/place-details
-
-           //extract the place-id to get details about the place.
-
-           var request = {placeId:place.place_id};
-           //
-           var infowindow = new google.maps.InfoWindow();
-           var service = new google.maps.places.PlacesService(map);
-
-           service.getDetails(request, function(place, status){
-            if (status == google.maps.places.PlacesServiceStatus.OK){
-               // Create a marker for each place, along with some details.
-               var marker = new google.maps.Marker({
-                map: map,
-                icon: image,
-                title: place.name,
-                position: place.geometry.location,
-                clickable: true,
-                address: place.formatted_address,
-                phone: place.formatted_phone_number,
-                placeID:place.place_id,
-                //photo: place.photos,
-                //hours: place.opening_hours.weekday_text,
-                //rating:place.rating
-              });
-
-              //makes sure there's a photo in the photos array returned
-              var photoString;
-              if(place.photos){
-               photoString = '<p><img src ='
-               + place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
-               +'alt =\"no photo available\"'
-               +'align=\"left\"><br></p>'
-             }
-             else{
-              photoString = '<p><br>No display picture available, try getting more photos!<br></p>'
-            }
-              //displays operating hours, if applicable
-              var hourString;
-              if(place.opening_hours){
-                hourString =
-                '<p><i><ins>hours:</ins></i></p> '
-                +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
-                +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
-
-              }else hourString = '<p>hours unavailable<br><br></p>'
-
-              //ratings, if available
-              var ratingString
-              if(place.rating){
-                ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
-
-              }else ratingString = 'ratings unavailable'
-
-              google.maps.event.addListener(marker, 'click', function(){
-
-                 //now we make the layout for the info window
-                 var dataString = '<h1>'+ this.getTitle()+ '</h1>'
-                 +'<p>'+this.address +'</p>'
-                 +'<P>P: '+this.phone+ '</p>'
-                 +ratingString
-                 +hourString
-                 +photoString
-                  //the button for getting more photos
-                 +'<button onclick="InstagramInit(\''
-                 + this.getPosition().lat()
-                 + '\', \''
-                 +this.getPosition().lng()
-                 + '\', \''
-                 +this.getTitle()
-                 +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
-
-              infowindow.setContent(dataString);
-              infowindow.open(map, this);
-            });}});
-markers.push(marker);
-bounds.extend(place.geometry.location);
-}
-map.fitBounds(bounds);
-});
-
-
-// Bias the SearchBox results towards places that are within the bounds of the
-// current map's viewport.
-google.maps.event.addListener(map, 'bounds_changed', function() {
-  var bounds = map.getBounds();
-  searchBox.setBounds(bounds);
-});
-}
-google.maps.event.addDomListener(window, 'load', initialize);
-
-
-function FavoritedInstagramInit(lat, lng, place_name) {
-    myParam = location.search.split('code=')[1];
-    if (!myParam)
-    {
-        document.write("Please Login to instagram first. Redirecting in 3 seconds.");
-        setTimeout('Redirect()', 3000);
-    }
-    else
-    {
-        document.getElementById('lat').value = lat;
-        document.getElementById('lng').value = lng;
-        document.getElementById('search_value').value = place_name;
-        document.getElementById("instagram_lat_lng").submit();
-    }
-}
-
-function InstagramInit(lat, lng, place_name) {
-    var myParam = location.search.split('code=')[1];
-    if (!myParam)
-    {
-        document.write("Please Login to instagram first. Redirecting in 3 seconds.");
-        setTimeout('Redirect()', 3000);
-    }
-    else
-    {
-        document.getElementById('lat').value = lat;
-        document.getElementById('lng').value = lng;
-        document.getElementById('search_value').value = place_name;
-        if (document.getElementById('bool_favorite_place').checked) {
-            document.getElementById('favorite_place_name').value = place_name;
-            document.getElementById('favorite_place_content_string').value = place_name;
+        for (i = 0; i < favorite_markers.length; i++) {
+            favorite_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(favorite_markers[i][1], favorite_markers[i][2]),
+                map: map
+            });
+            google.maps.event.addListener(favorite_marker, 'click', (function(favorite_marker, i) {
+                return function() {
+                    favorite_infowindow.setContent(favorite_markers[i][0]);
+                    favorite_infowindow.open(map, favorite_marker);
+                }
+            })(favorite_marker, i));
         }
-        document.getElementById("instagram_lat_lng").submit();
-    }
-}
 
-function Redirect()
-{
- window.location="/login/instagram_login/";
-}
+        {% endif %}
 
-</script>
+        google.maps.event.addListener(searchBox, 'places_changed', function(){
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+            for (var i = 0, marker; marker = markers[i]; i++) {
+                marker.setMap(null);
+            }
+            // For each place, get the icon, place name, and location.
+            markers = [];
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0, place; place = places[i]; i++) {
+                var image = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                };
+
+                //place details search taken from
+                // https://developers.google.com/maps/documentation/javascript/examples/place-details
+
+                //extract the place-id to get details about the place.
+
+                var request = {placeId:place.place_id};
+                //
+                var infowindow = new google.maps.InfoWindow();
+                var service = new google.maps.places.PlacesService(map);
+
+                service.getDetails(request, function(place, status){
+                    if (status == google.maps.places.PlacesServiceStatus.OK){
+                        // Create a marker for each place, along with some details.
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            icon: image,
+                            title: place.name,
+                            position: place.geometry.location,
+                            clickable: true,
+                            address: place.formatted_address,
+                            phone: place.formatted_phone_number,
+                            placeID:place.place_id,
+                            //photo: place.photos,
+                            //hours: place.opening_hours.weekday_text,
+                            //rating:place.rating
+                        });
+
+                        //makes sure there's a photo in the photos array returned
+                        var photoString;
+                        if(place.photos){
+                            photoString = '<p><img src ='
+                                    + place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
+                                    +'alt =\"no photo available\"'
+                                    +'align=\"left\"><br></p>'
+                        }
+                        else{
+                            photoString = '<p><br>No display picture available, try getting more photos!<br></p>'
+                        }
+                        //displays operating hours, if applicable
+
+                        var popularityString = '<img src="{% static "images/firenone.png" %}" alt="Picture of None Fire" />';
+                        for (var i = 0; i < poplats.length; i++) {
+                            console.log((Math.abs(parseFloat(poplats[i]) - place.geometry.location.lat())));
+                            console.log((Math.abs(parseFloat(poplngs[i]) - place.geometry.location.lng())));
+                            if ((Math.abs(parseFloat(poplats[i]) - place.geometry.location.lat()) <= 0.00005) &&
+                                    (Math.abs(parseFloat(poplngs[i]) - place.geometry.location.lng()) <= 0.00005)) {
+                                if (popstatuses[i] === "high") {
+                                    popularityString = '<img src="{% static "images/firehigh.png" %}" alt="Picture of High Fire" />';
+                                }
+                                else if (popstatuses[i] === "med") {
+                                    popularityString = '<img src="{% static "images/firemed.png" %}" alt="Picture of Med Fire" />';
+                                }
+                                else if (popstatuses[i] === "low") {
+                                    popularityString = '<img src="{% static "images/firelow.png" %}" alt="Picture of Low Fire" />';
+                                }
+                            }
+                        }
+
+
+
+
+                        var hourString;
+
+                        if(place.opening_hours){
+                            hourString =
+                                    '<p><i><ins>hours:</ins></i></p> '
+                                    +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
+                                    +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
+
+                        }else hourString = '<p>hours unavailable<br><br></p>'
+
+                        //ratings, if available
+                        var ratingString
+                        if(place.rating){
+                            ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
+
+                        }else ratingString = 'ratings unavailable'
+
+                        google.maps.event.addListener(marker, 'click', function(){
+
+                            //now we make the layout for the info window
+                            var dataString = '<h1>'+ this.getTitle()+ '</h1>'
+                                    +'<p>'+this.address +'</p>'
+                                    +'<P>P: '+this.phone+ '</p>'
+                                    +ratingString
+                                    +hourString
+                                    +photoString
+                                        //the button for getting more photos
+                                    +'<button onclick="InstagramInit(\''
+                                    + this.getPosition().lat()
+                                    + '\', \''
+                                    +this.getPosition().lng()
+                                    + '\', \''
+                                    +this.getTitle()
+                                    +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
+                                    + '<p>'+popularityString+'</p>';
+
+                            infowindow.setContent(dataString);
+                            infowindow.open(map, this);
+                        });}});
+                markers.push(marker);
+                bounds.extend(place.geometry.location);
+            }
+            map.fitBounds(bounds);
+        });
+
+
+        // Bias the SearchBox results towards places that are within the bounds of the
+        // current map's viewport.
+        google.maps.event.addListener(map, 'bounds_changed', function() {
+            var bounds = map.getBounds();
+            searchBox.setBounds(bounds);
+        });
+        }
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+
+        function FavoritedInstagramInit(lat, lng, place_name) {
+            myParam = location.search.split('code=')[1];
+            if (!myParam)
+            {
+                document.write("Please Login to instagram first. Redirecting in 3 seconds.");
+                setTimeout('Redirect()', 3000);
+            }
+            else
+            {
+                document.getElementById('lat').value = lat;
+                document.getElementById('lng').value = lng;
+                document.getElementById('search_value').value = place_name;
+                document.getElementById("instagram_lat_lng").submit();
+            }
+        }
+
+        function InstagramInit(lat, lng, place_name) {
+            var myParam = location.search.split('code=')[1];
+            if (!myParam)
+            {
+                document.write("Please Login to instagram first. Redirecting in 3 seconds.");
+                setTimeout('Redirect()', 3000);
+            }
+            else
+            {
+                document.getElementById('lat').value = lat;
+                document.getElementById('lng').value = lng;
+                document.getElementById('search_value').value = place_name;
+                if (document.getElementById('bool_favorite_place').checked) {
+                    document.getElementById('favorite_place_name').value = place_name;
+                    document.getElementById('favorite_place_content_string').value = place_name;
+                }
+                document.getElementById("instagram_lat_lng").submit();
+            }
+        }
+
+        function Redirect()
+        {
+            window.location="/login/instagram_login/";
+        }
+
+    </script>
 </head>
 
 <div id="top-div">
-{% if user.is_authenticated %}
-<h1>Hello {{ user.username }}, welcome back to Touristy! </h1> <br>
-{% else %}
-<h1>Hello Anon, welcome to Touristy!</h1><br>
-{% endif %}
+    {% if user.is_authenticated %}
+    <h1>Hello {{ user.username }}, welcome back to Touristy! </h1> <br>
+    {% else %}
+    <h1>Hello Anon, welcome to Touristy!</h1><br>
+    {% endif %}
 
 
-  <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
-    To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
-    <br> 
-    Vancouver's Weather: {{ weather }}<br>
-    <br> <br></p>
-  </div>
+    <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
+        To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
+        <br>
+        Vancouver's Weather: {{ weather }}<br>
+        <br> <br></p>
+</div>
 
 
-  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-  <div id="map-canvas"></div>
+<input id="pac-input" class="controls" type="text" placeholder="Search Box">
+<div id="map-canvas"></div>
 
 
 <div id="instagram">
-<form id="instagram_lat_lng" method="post">
-{% csrf_token %}
-<input type="hidden" id="lat" name="lat" value="" />
-<input type="hidden" id="lng" name="lng" value="" />
+    <form id="instagram_lat_lng" method="post">
+        {% csrf_token %}
+        <input type="hidden" id="lat" name="lat" value="" />
+        <input type="hidden" id="lng" name="lng" value="" />
 
-<input type="hidden" id="favorite_place_name" name="favorite_place_name" value="" />
-<input type="hidden" id="favorite_place_content_string" name="favorite_place_content_string" value="" />
+        <input type="hidden" id="favorite_place_name" name="favorite_place_name" value="" />
+        <input type="hidden" id="favorite_place_content_string" name="favorite_place_content_string" value="" />
 
 
-<input type="hidden" id="search_value" name="search_value" value="" />
-    {% if access_token %}
+        <input type="hidden" id="search_value" name="search_value" value="" />
+        {% if access_token %}
         <input type="hidden" id="token" name="token" value="{{ access_token }}" />
-    {% else %}
+        {% else %}
         <input type="hidden" id="token" name="token" value="" />
-    {% endif %}
-</form>
+        {% endif %}
+    </form>
 
 
     {% if photos %}
     <h1> Photos from that area! </h1> <br>
-    {% for photo in photos  %}
+    {% for media,photo in photos.items  %}
     <img src="{{ photo }}" alt="Photo" width="190">
+
+    <form id="likable" method="post" action="/home/">
+        {% csrf_token %}
+        <input type="hidden" id="photo_id_for_like" name = "photo_id_for_like" value="{{media.id}}"/>
+        {{media.like_count}} Likes
+        <input type="submit" value="Like!" />
+        {% if access_token %}
+        <input type="hidden" id="token" name="token" value="{{ access_token }}" />
+        {% else %}
+        <input type="hidden" id="token" name="token" value="" />
+        {% endif %}
+    </form>
+
+    <form id="followable" method="post" action="/home/">
+        {% csrf_token %}
+        <input type="hidden" id="user_id_for_follow" name = "user_id_for_follow" value="{{media.user.id}}"/>
+        <input type="submit" value="Follow!" />
+        {% if access_token %}
+        <input type="hidden" id="token" name="token" value="{{ access_token }}" />
+        {% else %}
+        <input type="hidden" id="token" name="token" value="" />
+        {% endif %}
+    </form>
+
+
+
     {% endfor %}
     {% else %}
-
-
-  <h3>No photos imported yet.</h3>
+    <h3>No photos imported yet.</h3>
     {% endif %}
-  <br>
-  <br>
+    <br>
+    <br>
 
-  {% if not user.is_authenticated %}
-  <h4> Login to view your history and favorites. </h4><br>
-  {% endif %}
-  {% if user.is_authenticated %}
-  <h4> {{ user.username }} 's History: </h4>
-  {{ user.userprofile.history|linebreaks }} 
-  {% endif %}
-  <br>
-  <br>
-  <h6 id="footertext">Copyright 2015 lolcat, all rights reserved. <br>
     {% if not user.is_authenticated %}
-    <a href="/login">Login</a> <br>
-    <a href="/login/instagram_login">Login to Instagram</a><br>
-    <a href="/login/register">Register</a>
+    <h4> Login to view your history and favorites. </h4><br>
     {% endif %}
-
     {% if user.is_authenticated %}
-    <form id="instagram_lat_lng" method="post">
-    {% csrf_token %}
-    <input type="hidden" id="clear_history" name="clear_history" value="True" />
-    <input type="submit" value="Clear History">
-    </form>
-    <a href="/login/logout">Logout</a><br>
-    <a href="/login/instagram_login">Login to Instagram</a><br>
-        {% if user.is_superuser %}
-            <a href="/admin">Admin</a><br>
-        {% endif %}
+    <h4> {{ user.username }} 's History: </h4>
+    {{ user.userprofile.history|linebreaks }}
     {% endif %}
     <br>
     <br>
-  </div>
+    <h6 id="footertext">Copyright 2015 lolcat, all rights reserved. <br>
+        {% if not user.is_authenticated %}
+        <a href="/login">Login</a> <br>
+        <a href="/login/instagram_login">Login to Instagram</a><br>
+        <a href="/login/register">Register</a>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <form id="instagram_lat_lng" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="clear_history" name="clear_history" value="True" />
+            <input type="submit" value="Clear History">
+        </form>
+        <a href="/login/logout">Logout</a><br>
+        <a href="/login/instagram_login">Login to Instagram</a><br>
+        {% if user.is_superuser %}
+        <a href="/admin">Admin</a><br>
+        {% endif %}
+        {% endif %}
+        <br>
+        <br>
+</div>
 
 
 </body>

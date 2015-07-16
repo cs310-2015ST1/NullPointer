@@ -13,9 +13,9 @@ session_opts = {
 }
 
 CONFIG = {
-    'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
-    'client_secret': 'b1871feaade14048b479907e02784883',
-    'redirect_uri': 'http://128.189.139.253/'
+    'client_id': '1affff744df74fd08d195007f0dca248',
+    'client_secret': '25942534c36046909ad8278eb70eadcd',
+    'redirect_uri': 'http://127.0.0.1:8000/home/'
 }
 unauthenticated_api = InstagramAPI(**CONFIG)
 
