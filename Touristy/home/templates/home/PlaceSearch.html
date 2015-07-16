@@ -130,8 +130,8 @@
        // For each place, get the icon, place name, and location.
        markers = [];
 
-      var bounds = new google.maps.LatLngBounds();
-      for (var i = 0, place; place = places[i]; i++) {
+       var bounds = new google.maps.LatLngBounds();
+       for (var i = 0, place; place = places[i]; i++) {
         var image = {
           url: place.icon,
           size: new google.maps.Size(71, 71),
@@ -152,95 +152,84 @@
 
            service.getDetails(request, function(place, status){
             if (status == google.maps.places.PlacesServiceStatus.OK){
-                         // Create a marker for each place, along with some details.
-                         var marker = new google.maps.Marker({
-                          map: map,
-                          icon: image,
-                          title: place.name,
-                          position: place.geometry.location,
-                          clickable: true,
-                          address: place.formatted_address,
-                          phone: place.formatted_phone_number,
-                          placeID:place.place_id,
-                          photo: place.photos,
-                          hours: place.opening_hours.weekday_text,
-                          rating:place.rating
-                        });
+               // Create a marker for each place, along with some details.
+               var marker = new google.maps.Marker({
+                map: map,
+                icon: image,
+                title: place.name,
+                position: place.geometry.location,
+                clickable: true,
+                address: place.formatted_address,
+                phone: place.formatted_phone_number,
+                placeID:place.place_id,
+                //photo: place.photos,
+                //hours: place.opening_hours.weekday_text,
+                //rating:place.rating
+              });
 
-                        //makes sure there's a photo in the photos array returned
-                        var photoString;
-                        if(place.photos){
-                         photoString = '<p><img src ='
-                         + place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
-                         +'alt =\"no photo available\"'
-                         +'align=\"left\"><br></p>'
-                       }
-                       else{
-                        photoString = '<p><br>No display picture available, try getting more photos!<br></p>'
-                      }
-                        //displays operating hours if applicable
-                        var hourString;
-                        if(place.opening_hours.weekday_text){
-                          hourString =
-                          '<p><i><ins>hours:</ins></i></p> '
-                          +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
-                          +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
+              //makes sure there's a photo in the photos array returned
+              var photoString;
+              if(place.photos){
+               photoString = '<p><img src ='
+               + place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
+               +'alt =\"no photo available\"'
+               +'align=\"left\"><br></p>'
+             }
+             else{
+              photoString = '<p><br>No display picture available, try getting more photos!<br></p>'
+            }
+              //displays operating hours, if applicable
+              var hourString;
+              if(place.opening_hours){
+                hourString =
+                '<p><i><ins>hours:</ins></i></p> '
+                +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
 
-                        }else hourString = '<p>hours unavailable<br></p>';
+              }else hourString = '<p>hours unavailable<br><br></p>'
 
-                        //ratings, if available
-                        var ratingString
-                        if(place.rating){
-                          ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
+              //ratings, if available
+              var ratingString
+              if(place.rating){
+                ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
 
-                        }else ratingString = 'ratings unavailable';
+              }else ratingString = 'ratings unavailable'
 
-                        google.maps.event.addListener(marker, 'click', function(){
+              google.maps.event.addListener(marker, 'click', function(){
 
-                             //now we make the layout for the info window
-                             var dataString = '<h1>'+ this.getTitle()+ '</h1>'
-                             +'<p>'+this.address +'</p>'
-                             +'<P>P: '+this.phone+ '</p>'
-                             +ratingString
-                             +hourString
-                             +photoString
-                           //the button for getting more photos
-                             +'<button onclick="InstagramInit(\''
-                             + this.getPosition().lat()
-                             + '\', \''
-                             +this.getPosition().lng()
-                             +'\')">more Photos!</button><br>' ;
+                 //now we make the layout for the info window
+                 var dataString = '<h1>'+ this.getTitle()+ '</h1>'
+                 +'<p>'+this.address +'</p>'
+                 +'<P>P: '+this.phone+ '</p>'
+                 +ratingString
+                 +hourString
+                 +photoString
+                  //the button for getting more photos
+                 +'<button onclick="InstagramInit(\''
+                 + this.getPosition().lat()
+                 + '\', \''
+                 +this.getPosition().lng()
+                 +'\')">more Photos!</button><br>' 
 
-                        infowindow.setContent(dataString);
-                        infowindow.open(map, this);
-                      });
-
-
-                      }});
-
-
-
-
-
-
+              infowindow.setContent(dataString);
+              infowindow.open(map, this);
+            });}});
 markers.push(marker);
-
 bounds.extend(place.geometry.location);
 }
-    //this resizes the search according to results; don't use.
-    map.fitBounds(bounds);
-  });
+map.fitBounds(bounds);
+});
 // Bias the SearchBox results towards places that are within the bounds of the
-  // current map's viewport.
-  google.maps.event.addListener(map, 'bounds_changed', function() {
-    var bounds = map.getBounds();
-    searchBox.setBounds(bounds);
-  });
+// current map's viewport.
+google.maps.event.addListener(map, 'bounds_changed', function() {
+  var bounds = map.getBounds();
+  searchBox.setBounds(bounds);
+});
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
