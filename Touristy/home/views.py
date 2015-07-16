@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from instagram.client import InstagramAPI
 from django.http import HttpResponseRedirect, HttpResponse
-from datetime import datetime
+from datetime import date, timedelta
 from models import Popularity
 
 # Create your views here.
@@ -21,32 +21,25 @@ CONFIG = {
 unauthenticated_api = InstagramAPI(**CONFIG)
 
 
-def calculate_popularity(times):
-
-    # times = ['2015-07-09 21:07:27', '2015-06-09 21:07:27', '2015-05-09 21:07:27', '2015-04-09 21:07:27',
-    #          '2015-07-09 21:07:27', '2015-06-09 21:07:27', '2015-05-09 21:07:27', '2015-04-09 21:07:27',
-    #          '2015-07-09 21:07:27', '2015-01-22 21:01:22', '2015-05-09 21:07:27', '2015-04-09 21:07:27']
-
+def calculate_popularity(times): ##receives array of datetimes!!!
     if len(times) < 10:
         return "low"
 
-    time = times[9]
-    time = time[0:10]
-    tenth_photo_date = datetime(time[2:4],time[5:7],time[8:10])
+    tenth_photo_date = times[9].date()
+    current_date = date.today()
 
-    current_date = datetime.now()
-    # current_time = current_time[0:10]
-    # current_time_days = int(current_time[2:4])*365+int(current_time[5:7])*30+int(current_time[8:10])
-    # print current_time_days
+    # print current_date
+    # print current_date - timedelta(weeks=6*4)
+    # print tenth_photo_date
 
-    if (current_date - datetime.timedelta(month=1)) < tenth_photo_date:
+    if (current_date - timedelta(weeks=1*4)) < tenth_photo_date:
         return "high"
-    elif (current_date - datetime.timedelta(month=6)) < tenth_photo_date:
+    elif (current_date - timedelta(weeks=6*4)) < tenth_photo_date:
         return "med"
     else:
         return "low"
 
-
+##popularity_list = Popularity.objects.order_by('-lat')
 def index(request):
     if request.method == 'POST':
         context_dict = {}
@@ -77,9 +70,22 @@ def index(request):
                     lng=lng,
                     pop=location_popularity,
                 )
+
+                popularity_list = Popularity.objects.order_by('-lat')
+
+                for popular in popularity_list:
+                    print popular.lat
+                    print lat
+                    print popular.lng
+                    print lng
+                    if (str(popular.lat) == lat and str(popular.lng) == lng):
+                        popular.delete()
+                        print 'overwrite popularity'
+
                 p.save()
-                print location_popularity
-                context_dict = {'access_token': access_token, 'photos': photos, 'location_popularity': location_popularity}
+
+                context_dict = {'access_token': access_token, 'photos': photos, 'popularity_list': popularity_list}
+
             except Exception as e:
                 print(e)
         else:
@@ -101,14 +107,27 @@ def index(request):
                     photos.append(media.get_standard_resolution_url())
                     times.append(media.created_time)
                 location_popularity = calculate_popularity(times)
+
                 p = Popularity.objects.create(
                     lat=lat,
                     lng=lng,
                     pop=location_popularity,
                 )
+
+                popularity_list = Popularity.objects.order_by('-lat')
+
+                for popular in popularity_list:
+                    print popular.lat
+                    print lat
+                    print popular.lng
+                    print lng
+                    if (str(popular.lat) == lat and str(popular.lng) == lng):
+                        popular.delete()
+                        print 'overwrite popularity'
+
                 p.save()
-                print location_popularity
-                context_dict = {'access_token': access_token, 'photos': photos, 'location_popularity': location_popularity}
+
+                context_dict = {'access_token': access_token, 'photos': photos, 'popularity_list': popularity_list}
             except Exception as e:
                 print(e)
 
@@ -116,4 +135,5 @@ def index(request):
     else:
         # No context variables to pass to the template system, hence the
         # blank dictionary object...
-        return render(request, 'home/index.html', {})
+        popularity_list = Popularity.objects.order_by('-lat')
+        return render(request, 'home/index.html', {'popularity_list': popularity_list})

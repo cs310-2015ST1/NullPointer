@@ -1,6 +1,29 @@
 <!DOCTYPE html>
-<html>
+
 {% load staticfiles %}
+
+{% if popularity_list %}
+    {% for popularity in popularity_list %}
+
+        <script type="text/javascript">
+            var poplats = [];
+            poplats.push("{{popularity.lat}}");
+            var poplngs = [];
+            poplngs.push("{{popularity.lng}}");
+            var popstatuses = [];
+            popstatuses.push("{{popularity.pop}}");
+        </script>
+
+    {% endfor %}
+{% else %}
+    <script type="text/javascript">
+        var poplats = [];
+        var poplngs = [];
+        var popstatuses = [];
+    </script>
+{% endif %}
+
+
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
   <!--css style taken from 
@@ -153,11 +176,13 @@
            var request = {placeId:placeId};
            //
            var infowindow = new google.maps.InfoWindow();
-            var service = new google.maps.places.PlacesService(map);
+           var service = new google.maps.places.PlacesService(map);
 
            service.getDetails(request, function(place, status){
                     if (status == google.maps.places.PlacesServiceStatus.OK){
                          // Create a marker for each place.
+
+
                         var marker = new google.maps.Marker({
                             map: map,
                             icon: image,
@@ -182,6 +207,32 @@
                         photoString = '<p>No display picture available, try getting more photos!<br></p>'
                         }
 
+                        var popularityString = '<img src="{% static "images/firenone.png" %}" alt="Picture of Fire" />';
+
+
+
+                        for (var i = 0; i < poplats.length; i++) {
+
+                            console.log((Math.abs(parseFloat(poplats[i]) - place.geometry.location.lat())));
+                            console.log((Math.abs(parseFloat(poplngs[i]) - place.geometry.location.lng())));
+
+                            if ((Math.abs(parseFloat(poplats[i]) - place.geometry.location.lat()) <= 0.00005) &&
+                               (Math.abs(parseFloat(poplngs[i]) - place.geometry.location.lng()) <= 0.00005)) {
+                                if (popstatuses[i] === "high") {
+                                    popularityString = '<img src="{% static "images/firehigh.png" %}" alt="Picture of Fire" />';
+                                }
+
+                                else if (popstatuses[i] === "med") {
+                                    popularityString = '<img src="{% static "images/firemed.png" %}" alt="Picture of Fire" />';
+                                }
+                                else if (popstatuses[i] === "low") {
+                                    popularityString = '<img src="{% static "images/firelow.png" %}" alt="Picture of Fire" />';
+                                }
+
+                            }
+                        }
+
+
                         var hourString;
                         if(place.opening_hours.weekday_text){
                             hourString =
@@ -196,7 +247,7 @@
 
                         }else hourString = '<p>hours unavailable<br></p>';
                         //ratings, if available
-                        var ratingString
+                        var ratingString;
                         if(place.rating){
                             ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
 
@@ -217,7 +268,8 @@
                            + '\', \''
                            +this.getPosition().lng()
                            +'\')">more Photos!</button><br>'
-                           + '<img src="{% static "images/firehigh.png" %}" alt="Picture of Fire" />';
+                           + popularityString
+                           ;
 
                infowindow.setContent(dataString);
                infowindow.open(map, this);
@@ -225,10 +277,6 @@
 
 
                     }});
-
-
-
-
 
 
         markers.push(marker);
@@ -323,11 +371,20 @@ To use simply login to Instagram and search away! Select a place that interests 
     <a href="/login/instagram_login">Login to Instagram</a><br>
     {% endif %}
 
+
+
+
+
   </h6>
+
+
+
+
 
 </div>
 
 
 </body>
+
 
 </html>
