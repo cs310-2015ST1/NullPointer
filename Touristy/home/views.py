@@ -37,7 +37,7 @@ def index(request):
                 return render(request, 'home/index.html', {})
             except Exception as e:
                     print(e)
-                    HttpResponse("blah")
+                    return HttpResponse(e)
         else:
             photo_id_for_like = request.POST.get('photo_id_for_like')
 
@@ -54,7 +54,7 @@ def index(request):
                     return render(request, 'home/index.html', {})
                 except Exception as e:
                         print(e)
-                        HttpResponse("blah")
+                        return HttpResponse(e)
             else:
                 # Gather the username and password provided by the user.
                 # This information is obtained from the login form.
