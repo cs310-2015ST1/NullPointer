@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
@@ -16,7 +16,6 @@
 	    height: 100%;
 	    position: absolute;
 	}
-
 	#top-div {
 	    background: #C2E0FF;
 	    position: relative;
@@ -26,7 +25,6 @@
 	    right: 0;
 	    overflow: hidden;
 	}
-
 	#map-canvas {
 	    background: #C2E0FF;
 	    position: absolute;
@@ -37,7 +35,6 @@
 	    overflow: hidden;
 	    padding: 2em;
 	}
-
 	#instagram {
 	    background: #C2E0FF;
 	    position: absolute;
@@ -58,7 +55,6 @@
         outline: none;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
-
       #pac-input {
         background-color: #fff;
         font-family: Roboto;
@@ -69,54 +65,48 @@
         text-overflow: ellipsis;
         width: 400px;
       }
-
       #pac-input:focus {
         border-color: #4d90fe;
       }
-
       .pac-container {
         font-family: Roboto;
       }
-
       #type-selector {
         color: #fff;
         background-color: #4d90fe;
         padding: 5px 11px 0px 11px;
       }
-
       #type-selector label {
         font-family: Roboto;
         font-size: 13px;
         font-weight: 300;
       }
-
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&"></script>
-    <script>
-    function initialize() {
+  <script>
+  function initialize() {
 
-      var markers = [];
-      var mapCanvas = document.getElementById('map-canvas');
-      var VANCOUVER = new google.maps.LatLng(49.2827,-123.1207);
-      var mapOptions = {
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-        
-      }
-      var map = new google.maps.Map(mapCanvas, mapOptions)
+    var markers = [];
+    var mapCanvas = document.getElementById('map-canvas');
+    var VANCOUVER = new google.maps.LatLng(49.2827,-123.1207);
+    var mapOptions = {
+      mapTypeId: google.maps.MapTypeId.ROADMAP
 
- var northEastLatLng = new google.maps.LatLng(49.374374, -123.2741459);
-  var southWestLatLng = new google.maps.LatLng(49.186495, -122.8231339);
-      var defaultBounds = new google.maps.LatLngBounds(northEastLatLng, southWestLatLng);
-  map.fitBounds(defaultBounds);
+    }
+    var map = new google.maps.Map(mapCanvas, mapOptions)
+
+    var northEastLatLng = new google.maps.LatLng(49.374374, -123.2741459);
+    var southWestLatLng = new google.maps.LatLng(49.186495, -122.8231339);
+    var defaultBounds = new google.maps.LatLngBounds(northEastLatLng, southWestLatLng);
+    map.fitBounds(defaultBounds);
 
   /*embedding searchbar taken from google maps documentation,
   at: https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
   */
-
   var input = (document.getElementById('pac-input'));
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
   var searchBox = new google.maps.places.SearchBox(input);
-  var clickedMarker = null;
+
       // Listen for the event fired when the user selects an item from the
   // pick list. Retrieve the matching places for that item.
   //<button onclick='InstagramInit('{{ favorite.lat }}', '{{ favorite.lng }}', '{{ favorite.place_name }}')'> lol </button>
@@ -158,51 +148,113 @@
        // For each place, get the icon, place name, and location.
        markers = [];
 
-
-       //setting upper and lower bounds for the map pan;
-      var contentString = "<a href=\"/home/\">Get Photos!</a><br />";
-
-        var bounds = new google.maps.LatLngBounds();
+       var bounds = new google.maps.LatLngBounds();
        for (var i = 0, place; place = places[i]; i++) {
-            var image = {
-              url: place.icon,
-              size: new google.maps.Size(71, 71),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(17, 34),
-              scaledSize: new google.maps.Size(25, 25)
-            };
-          // Create a marker for each place.
-          var marker = new google.maps.Marker({
-            map: map,
-            icon: image,
-            title: place.name,
-            position: place.geometry.location,
-            clickable: true
-          });
+        var image = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25)
+        };
 
-           var infowindow = new google.maps.InfoWindow({
-               content: ""
-           });
+           //place details search taken from
+           // https://developers.google.com/maps/documentation/javascript/examples/place-details
 
-           google.maps.event.addListener(marker, 'click', function() {
-               infowindow.setContent('<button onclick="InstagramInit(\'' + this.getPosition().lat() + '\', \'' + this.getPosition().lng() + '\', \'' + this.getTitle() + '\')">Get Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?<br>' + this.getTitle());
-               infowindow.open(map, this);
-           });
-        markers.push(marker);
+           //extract the place-id to get details about the place.
 
-        bounds.extend(place.geometry.location);
-       }
-    //this resizes the search according to results; don't use.
-    map.fitBounds(bounds);
-  });
+           var request = {placeId:place.place_id};
+           //
+           var infowindow = new google.maps.InfoWindow();
+           var service = new google.maps.places.PlacesService(map);
+
+           service.getDetails(request, function(place, status){
+            if (status == google.maps.places.PlacesServiceStatus.OK){
+               // Create a marker for each place, along with some details.
+               var marker = new google.maps.Marker({
+                map: map,
+                icon: image,
+                title: place.name,
+                position: place.geometry.location,
+                clickable: true,
+                address: place.formatted_address,
+                phone: place.formatted_phone_number,
+                placeID:place.place_id,
+                //photo: place.photos,
+                //hours: place.opening_hours.weekday_text,
+                //rating:place.rating
+              });
+
+              //makes sure there's a photo in the photos array returned
+              var photoString;
+              if(place.photos){
+               photoString = '<p><img src ='
+               + place.photos[0].getUrl({'maxWidth': 400, 'maxHeight': 200})
+               +'alt =\"no photo available\"'
+               +'align=\"left\"><br></p>'
+             }
+             else{
+              photoString = '<p><br>No display picture available, try getting more photos!<br></p>'
+            }
+              //displays operating hours, if applicable
+              var hourString;
+              if(place.opening_hours){
+                hourString =
+                '<p><i><ins>hours:</ins></i></p> '
+                +'<p>'+ place.opening_hours.weekday_text[0]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[1]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[2]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[3]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[4]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[5]+ '</p>'
+                +'<p>'+ place.opening_hours.weekday_text[6]+ '</p>'
+
+              }else hourString = '<p>hours unavailable<br><br></p>'
+
+              //ratings, if available
+              var ratingString
+              if(place.rating){
+                ratingString='<p><i><ins>ratings: </ins></i></p>'+'<p>' +place.rating+'/5.0<br><br></p>'
+
+              }else ratingString = 'ratings unavailable'
+
+              google.maps.event.addListener(marker, 'click', function(){
+
+                 //now we make the layout for the info window
+                 var dataString = '<h1>'+ this.getTitle()+ '</h1>'
+                 +'<p>'+this.address +'</p>'
+                 +'<P>P: '+this.phone+ '</p>'
+                 +ratingString
+                 +hourString
+                 +photoString
+                  //the button for getting more photos
+                 +'<button onclick="InstagramInit(\''
+                 + this.getPosition().lat()
+                 + '\', \''
+                 +this.getPosition().lng()
+                 + '\', \''
+                 +this.getTitle()
+                 +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
+
+              infowindow.setContent(dataString);
+              infowindow.open(map, this);
+            });}});
+markers.push(marker);
+bounds.extend(place.geometry.location);
+}
+map.fitBounds(bounds);
+});
+
+
 // Bias the SearchBox results towards places that are within the bounds of the
-  // current map's viewport.
-  google.maps.event.addListener(map, 'bounds_changed', function() {
-    var bounds = map.getBounds();
-    searchBox.setBounds(bounds);
-  });
+// current map's viewport.
+google.maps.event.addListener(map, 'bounds_changed', function() {
+  var bounds = map.getBounds();
+  searchBox.setBounds(bounds);
+});
 }
 google.maps.event.addDomListener(window, 'load', initialize);
+
 
 function FavoritedInstagramInit(lat, lng, place_name) {
     myParam = location.search.split('code=')[1];
@@ -242,7 +294,7 @@ function InstagramInit(lat, lng, place_name) {
 
 function Redirect()
 {
-   window.location="/login/instagram_login/";
+ window.location="/login/instagram_login/";
 }
 
 </script>
@@ -255,15 +307,18 @@ function Redirect()
 <h1>Hello Anon, welcome to Touristy!</h1><br>
 {% endif %}
 
-<p>Touristy is a simple app that lets you obtain pictures from around any place you can find in google maps. <br>
-To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
-<br> <br>
-<br> <br></p>
-</div>
+
+  <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
+    To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
+    <br> 
+    Vancouver's Weather: {{ weather }}<br>
+    <br> <br></p>
+  </div>
 
 
-<input id="pac-input" class="controls" type="text" placeholder="Search Box">
-<div id="map-canvas"></div>
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <div id="map-canvas"></div>
+
 
 <div id="instagram">
 <form id="instagram_lat_lng" method="post">
@@ -282,13 +337,17 @@ To use simply login to Instagram and search away! Select a place that interests 
         <input type="hidden" id="token" name="token" value="" />
     {% endif %}
 </form>
+
+
     {% if photos %}
-	<h1> Photos from that area! </h1> <br>
-        {% for photo in photos  %}
-            <img src="{{ photo }}" alt="Photo" width="190">
-        {% endfor %}
+    <h1> Photos from that area! </h1> <br>
+    {% for photo in photos  %}
+    <img src="{{ photo }}" alt="Photo" width="190">
+    {% endfor %}
     {% else %}
-        <h3>No photos imported yet.</h3>
+
+
+  <h3>No photos imported yet.</h3>
     {% endif %}
   <br>
   <br>
@@ -297,10 +356,6 @@ To use simply login to Instagram and search away! Select a place that interests 
   <h4> Login to view your history and favorites. </h4><br>
   {% endif %}
   {% if user.is_authenticated %}
-  <h4> {{ user.username }} 's Favorites: </h4>
-  {% for favorite in user.favorite_set.all %}
-  {{ favorite.place_name }}, {{ favorite.lat }}, {{ favorite.lng }} <br>
-  {% endfor %}
   <h4> {{ user.username }} 's History: </h4>
   {{ user.userprofile.history|linebreaks }} 
   {% endif %}
@@ -322,10 +377,9 @@ To use simply login to Instagram and search away! Select a place that interests 
     <a href="/login/logout">Logout</a><br>
     <a href="/login/instagram_login">Login to Instagram</a><br>
     {% endif %}
-
-  </h6>
-
-</div>
+    <br>
+    <br>
+  </div>
 
 
 </body>

@@ -1,88 +1,97 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <!--credit goes to google for how to embed Google maps, from the tutorial:
   https://developers.google.com/maps/tutorials/fundamentals/adding-a-google-map-->
   <!--css style taken from 
-    https://developers.google.com/maps/documentation/javascript/examples/places-searchbox -->
+  https://developers.google.com/maps/documentation/javascript/examples/places-searchbox -->
   <head>
     <title>Touristy Home</title>
     <style>
-	html, body, * {
-	    padding: 0;
-	    margin: 0;
-	}
-	html {
-	    width: 100%;
-	    height: 100%;
-	    position: absolute;
-	}
-	#top-div {
-	    background: #C2E0FF;
-	    position: relative;
-	    left: 0;
-	    top: 80%;
-	    bottom: 0;
-	    right: 0;
-	    overflow: hidden;
-	}
-	#map-canvas {
-	    background: #C2E0FF;
-	    position: absolute;
-	    left: 0;
-	    top: 20%;
-	    bottom: 0;
-	    right: 50%;
-	    overflow: hidden;
-	    padding: 2em;
-	}
-	#instagram {
-	    background: #C2E0FF;
-	    position: absolute;
-	    left: 50%;
-	    top: 20%;
-	    bottom: 0;
-	    right: 0;
-	    overflow-y: auto;    
-	    padding: 2em;
-	}
-      .controls {
-        margin-top: 16px;
-        border: 1px solid transparent;
-        border-radius: 2px 0 0 2px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        height: 32px;
-        outline: none;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-      #pac-input {
-        background-color: #fff;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        margin-left: 12px;
-        padding: 0 11px 0 13px;
-        text-overflow: ellipsis;
-        width: 400px;
-      }
-      #pac-input:focus {
-        border-color: #4d90fe;
-      }
-      .pac-container {
-        font-family: Roboto;
-      }
-      #type-selector {
-        color: #fff;
-        background-color: #4d90fe;
-        padding: 5px 11px 0px 11px;
-      }
-      #type-selector label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&"></script>
+    html, body, * {
+     padding: 0;
+     margin: 0;
+   }
+   html {
+     width: 100%;
+     height: 100%;
+     position: absolute;
+   }
+
+   #top-div {
+     background: #00CC66;
+     position: relative;
+     left: 0;
+     top: 80%;
+     bottom: 0;
+     right: 0;
+     overflow: hidden;
+   }
+
+   #map-canvas {
+     background: #00CC66;
+     position: absolute;
+     left: 0;
+     top: 20%;
+     bottom: 0;
+     right: 50%;
+     overflow: hidden;
+     padding: 2em;
+   }
+
+   #instagram {
+     background: #00CC66;
+     position: absolute;
+     left: 50%;
+     top: 20%;
+     bottom: 0;
+     right: 0;
+     overflow-y: auto;    
+     padding: 2em;
+   }
+   .controls {
+    margin-top: 16px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  #pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 400px;
+  }
+
+  #pac-input:focus {
+    border-color: #4d90fe;
+  }
+
+  .pac-container {
+    font-family: Roboto;
+  }
+
+  #type-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    padding: 5px 11px 0px 11px;
+  }
+
+  #type-selector label {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places&"></script>
   <script>
   function initialize() {
 
@@ -109,33 +118,6 @@
 
       // Listen for the event fired when the user selects an item from the
   // pick list. Retrieve the matching places for that item.
-  //<button onclick='InstagramInit('{{ favorite.lat }}', '{{ favorite.lng }}', '{{ favorite.place_name }}')'> lol </button>
-  {% if user.is_authenticated %}
-       var favorite_markers = [
-           {% for favorite in user.favorite_set.all %}
-               [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}}",
-                "{{ favorite.lat }}",
-                "{{ favorite.lng }}"],
-           {% endfor %}
-       ];
-       
-
-        var favorite_infowindow = new google.maps.InfoWindow(), favorite_marker, i;
-        for (i = 0; i < favorite_markers.length; i++) {  
-        favorite_marker = new google.maps.Marker({
-            position: new google.maps.LatLng(favorite_markers[i][1], favorite_markers[i][2]),
-            map: map
-        });
-        google.maps.event.addListener(favorite_marker, 'click', (function(favorite_marker, i) {
-            return function() {
-                favorite_infowindow.setContent(favorite_markers[i][0]);
-                favorite_infowindow.open(map, favorite_marker);
-            }
-        })(favorite_marker, i));
-    }
-        
-  {% endif %}
-
   google.maps.event.addListener(searchBox, 'places_changed', function(){
     var places = searchBox.getPlaces();
 
@@ -232,9 +214,7 @@
                  + this.getPosition().lat()
                  + '\', \''
                  +this.getPosition().lng()
-                 + '\', \''
-                 +this.getTitle()
-                 +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
+                 +'\')">more Photos!</button><br>' 
 
               infowindow.setContent(dataString);
               infowindow.open(map, this);
@@ -244,8 +224,6 @@ bounds.extend(place.geometry.location);
 }
 map.fitBounds(bounds);
 });
-
-
 // Bias the SearchBox results towards places that are within the bounds of the
 // current map's viewport.
 google.maps.event.addListener(map, 'bounds_changed', function() {
@@ -255,41 +233,19 @@ google.maps.event.addListener(map, 'bounds_changed', function() {
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
-
-function FavoritedInstagramInit(lat, lng, place_name) {
-    myParam = location.search.split('code=')[1];
-    if (!myParam)
-    {
-        document.write("Please Login to instagram first. Redirecting in 3 seconds.");
-        setTimeout('Redirect()', 3000);
-    }
-    else
-    {
-        document.getElementById('lat').value = lat;
-        document.getElementById('lng').value = lng;
-        document.getElementById('search_value').value = place_name;
-        document.getElementById("instagram_lat_lng").submit();
-    }
-}
-
-function InstagramInit(lat, lng, place_name) {
-    var myParam = location.search.split('code=')[1];
-    if (!myParam)
-    {
-        document.write("Please Login to instagram first. Redirecting in 3 seconds.");
-        setTimeout('Redirect()', 3000);
-    }
-    else
-    {
-        document.getElementById('lat').value = lat;
-        document.getElementById('lng').value = lng;
-        document.getElementById('search_value').value = place_name;
-        if (document.getElementById('bool_favorite_place').checked) {
-            document.getElementById('favorite_place_name').value = place_name;
-            document.getElementById('favorite_place_content_string').value = place_name;
-        }
-        document.getElementById("instagram_lat_lng").submit();
-    }
+function InstagramInit(lat, lng) {
+  var myParam = location.search.split('code=')[1];
+  if (!myParam)
+  {
+    document.write("Please Login to instagram first. Redirecting in 3 seconds.");
+    setTimeout('Redirect()', 3000);
+  }
+  else
+  {
+    document.getElementById('lat').value = lat;
+    document.getElementById('lng').value = lng;
+    document.getElementById("instagram_lat_lng").submit();
+  }
 }
 
 function Redirect()
@@ -301,17 +257,15 @@ function Redirect()
 </head>
 
 <div id="top-div">
-{% if user.is_authenticated %}
-<h1>Hello {{ user.username }}, welcome back to Touristy! </h1> <br>
-{% else %}
-<h1>Hello Anon, welcome to Touristy!</h1><br>
-{% endif %}
+  {% if user.is_authenticated %}
+  <h1>Hello {{ user.username }}, welcome to Touristy Place search! {{ user.picture }} </h1> <br>
+  {% else %}
+  <h1>Hello Anon, welcome to Touristy Place Search!</h1><br>
+  {% endif %}
 
-
-  <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
+  <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in google maps. <br>
     To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
-    <br> 
-    {{ weather }}<br>
+    <br> <br>
     <br> <br></p>
   </div>
 
@@ -319,25 +273,19 @@ function Redirect()
   <input id="pac-input" class="controls" type="text" placeholder="Search Box">
   <div id="map-canvas"></div>
 
-
-<div id="instagram">
-<form id="instagram_lat_lng" method="post">
-{% csrf_token %}
-<input type="hidden" id="lat" name="lat" value="" />
-<input type="hidden" id="lng" name="lng" value="" />
-
-<input type="hidden" id="favorite_place_name" name="favorite_place_name" value="" />
-<input type="hidden" id="favorite_place_content_string" name="favorite_place_content_string" value="" />
+  <div id="instagram">
 
 
-<input type="hidden" id="search_value" name="search_value" value="" />
-    {% if access_token %}
-        <input type="hidden" id="token" name="token" value="{{ access_token }}" />
-    {% else %}
-        <input type="hidden" id="token" name="token" value="" />
-    {% endif %}
-</form>
-
+    <form id="instagram_lat_lng" method="post">
+      {% csrf_token %}
+      <input type="hidden" id="lat" name="lat" value="" />
+      <input type="hidden" id="lng" name="lng" value="" />
+      {% if access_token %}
+      <input type="hidden" id="token" name="token" value="{{ access_token }}" />
+      {% else %}
+      <input type="hidden" id="token" name="token" value="" />
+      {% endif %}
+    </form>
 
     {% if photos %}
     <h1> Photos from that area! </h1> <br>
@@ -345,40 +293,24 @@ function Redirect()
     <img src="{{ photo }}" alt="Photo" width="190">
     {% endfor %}
     {% else %}
-
-
-  <h3>No photos imported yet.</h3>
-    {% endif %}
-  <br>
-  <br>
-
-  {% if not user.is_authenticated %}
-  <h4> Login to view your history and favorites. </h4><br>
-  {% endif %}
-  {% if user.is_authenticated %}
-  <h4> {{ user.username }} 's History: </h4>
-  {{ user.userprofile.history|linebreaks }} 
-  {% endif %}
-  <br>
-  <br>
-  <h6 id="footertext">Copyright 2015 lolcat, all rights reserved. <br>
-    {% if not user.is_authenticated %}
-    <a href="/login">Login</a> <br>
-    <a href="/login/instagram_login">Login to Instagram</a><br>
-    <a href="/login/register">Register</a>
-    {% endif %}
-
-    {% if user.is_authenticated %}
-    <form id="instagram_lat_lng" method="post">
-    {% csrf_token %}
-    <input type="hidden" id="clear_history" name="clear_history" value="True" />
-    <input type="submit" value="Clear History">
-    </form>
-    <a href="/login/logout">Logout</a><br>
-    <a href="/login/instagram_login">Login to Instagram</a><br>
+    <h3>No photos imported yet.</h3>
     {% endif %}
     <br>
     <br>
+    <h6 id="footertext">Copyright 2015 lolcat, all rights reserved. <br>
+      {% if not user.is_authenticated %}
+      <a href="/login">Login</a> <br>
+      <a href="/login/instagram_login">Login to Instagram</a><br>
+      <a href="/login/register">Register</a>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+      <a href="/login/logout">Logout</a><br>
+      <a href="/login/instagram_login">Login to Instagram</a><br>
+      {% endif %}
+
+    </h6>
+
   </div>
 
 
