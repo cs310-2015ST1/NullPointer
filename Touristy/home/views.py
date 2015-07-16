@@ -65,24 +65,9 @@ def index(request):
                     photos.append(media.get_standard_resolution_url())
                     times.append(media.created_time)
                 location_popularity = calculate_popularity(times)
-                p = Popularity.objects.create(
-                    lat=lat,
-                    lng=lng,
-                    pop=location_popularity,
-                )
 
+                p = Popularity.objects.get_or_create(lat=lat,lng=lng,pop=location_popularity)
                 popularity_list = Popularity.objects.order_by('-lat')
-
-                for popular in popularity_list:
-                    print popular.lat
-                    print lat
-                    print popular.lng
-                    print lng
-                    if (str(popular.lat) == lat and str(popular.lng) == lng):
-                        popular.delete()
-                        print 'overwrite popularity'
-
-                p.save()
 
                 context_dict = {'access_token': access_token, 'photos': photos, 'popularity_list': popularity_list}
 
@@ -108,24 +93,8 @@ def index(request):
                     times.append(media.created_time)
                 location_popularity = calculate_popularity(times)
 
-                p = Popularity.objects.create(
-                    lat=lat,
-                    lng=lng,
-                    pop=location_popularity,
-                )
-
+                p = Popularity.objects.get_or_create(lat=lat,lng=lng,pop=location_popularity)
                 popularity_list = Popularity.objects.order_by('-lat')
-
-                for popular in popularity_list:
-                    print popular.lat
-                    print lat
-                    print popular.lng
-                    print lng
-                    if (str(popular.lat) == lat and str(popular.lng) == lng):
-                        popular.delete()
-                        print 'overwrite popularity'
-
-                p.save()
 
                 context_dict = {'access_token': access_token, 'photos': photos, 'popularity_list': popularity_list}
             except Exception as e:
