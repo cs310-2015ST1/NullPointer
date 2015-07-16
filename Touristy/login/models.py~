@@ -3,18 +3,6 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Favorite(models.Model):
-    user_profile = models.ForeignKey(User)
-    place_name = models.CharField(max_length=100)
-    lat = models.CharField(max_length=30)
-    lng = models.CharField(max_length=30)
-    content_string = models.CharField(max_length=200)
- 
-    def __unicode__(self):
-        return self.place_name
-
-
-
 class UserProfile(models.Model):
     # This line is required. Links UserProfile to a User model instance.
     user = models.OneToOneField(User)
@@ -28,5 +16,16 @@ class UserProfile(models.Model):
     # Override the __unicode__() method to return out something meaningful!
     def __unicode__(self):
         return self.user.username
+
+
+class Favorite(models.Model):
+    user_profile = models.ForeignKey(UserProfile)
+    place_name = models.CharField(max_length=100)
+    lat = models.CharField(max_length=30)
+    lng = models.CharField(max_length=30)
+    content_string = models.CharField(max_length=200)
+ 
+    def __unicode__(self):
+        return self.place_name
 
 

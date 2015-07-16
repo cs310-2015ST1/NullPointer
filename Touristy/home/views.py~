@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from instagram.client import InstagramAPI
 from django.http import HttpResponseRedirect, HttpResponse
+from login.models import Favorite
 
 # Create your views here.
 
@@ -13,7 +14,7 @@ session_opts = {
 CONFIG = {
     'client_id': '8d2ddb72ef774dc6a472a4a2090ebbe1',
     'client_secret': 'b1871feaade14048b479907e02784883',
-    'redirect_uri': 'http://128.189.139.253/'
+    'redirect_uri': 'http://127.0.0.1:8000/'
 }
 
 unauthenticated_api = InstagramAPI(**CONFIG)
@@ -26,9 +27,49 @@ def index(request):
                 # We use request.POST.get('<variable>') as opposed to request.POST['<variable>'],
                 # because the request.POST.get('<variable>') returns None, if the value does not exist,
                 # while the request.POST['<variable>'] will raise key error exception
-        lat = str(round(float(request.POST.get('lat')), 7))
-        lng = str(round(float(request.POST.get('lng')), 7))
+        lat = request.POST.get('lat')
+        lng = request.POST.get('lng')
+        search_value = request.POST.get('search_value')
+        bool_clear_search = request.POST.get('clear_history')
         access_token = request.POST.get('token')
+
+        favorite_place_name = request.POST.get('favorite_place_name')
+        # Add the search history to the user's history.
+        user = request.user
+        if user.is_anonymous():
+            print "Anonymous user detected, breaking early."
+        else:
+            profile = user.userprofile
+            if search_value:
+                profile.history = search_value + '\n' + profile.history
+            elif bool_clear_search:
+                profile.history = ""
+                print "cleared history!!"
+                profile.save()
+                return render(request, 'home/index.html', {})
+
+            if favorite_place_name != "":
+                favorite_place_name = request.POST.get('favorite_place_name')
+                favorite_place_content_string = request.POST.get('favorite_place_content_string')
+                #fav = user.entry_set.create(user_profile=user, place_name=favorite_place_name, lat=lat, lng=lng, content_string=favorite_place_content_string)
+                fav = Favorite(user_profile=user, place_name=favorite_place_name, lat=lat, lng=lng, content_string=favorite_place_content_string)
+                fav.save()
+                print fav.user_profile
+                print fav
+                print 'Favorite printed!'
+            else:
+                user.favorite_set.all()
+                print "Not favorited!"
+
+            if profile:
+                print "There's a profile!"
+                print user.username
+                print profile.history
+                profile.save()
+            else:
+                print "NO profile.. no login, no history."
+
+            
 
         if access_token:
             try:
