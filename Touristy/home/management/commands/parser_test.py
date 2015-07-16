@@ -24,9 +24,13 @@ def urlParserTester():
     except IOError as e:
         raise parsorError("problem making a web request")
 
+    #check to see if there was a JSONObject returned.
+    if f is None:
+        raise parsorError("JSONObject returned from httprequest is null")
+
     json_string = f.read()
     parsed_json = json.loads(json_string)
-
+    
     #attempt reading JSONObject to see if it's correct
     try:
         forcast_array = parsed_json['forecast']['txt_forecast']['forecastday']
