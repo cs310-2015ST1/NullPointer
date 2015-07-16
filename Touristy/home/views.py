@@ -16,9 +16,14 @@ CONFIG = {
     'redirect_uri': 'http://touristy.no-ip.org/'
 }
 
+
+
 unauthenticated_api = InstagramAPI(**CONFIG)
 
 def index(request):
+    weather = parseWeather()
+    weather = "Weather today is war 37 deg, cloudy, humity 90%"
+
     if request.method == 'POST':
         context_dict = {}
         # Gather the username and password provided by the user.
@@ -69,5 +74,4 @@ def index(request):
         # blank dictionary object...
         return render(request, 'home/index.html', {})
     
-    
-    
+
