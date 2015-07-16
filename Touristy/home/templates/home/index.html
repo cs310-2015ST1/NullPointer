@@ -8,18 +8,19 @@
 {% load staticfiles %}
 
 {% if popularity_list %}
-{% for popularity in popularity_list %}
+
 
 <script type="text/javascript">
     var poplats = [];
-    poplats.push("{{popularity.lat}}");
     var poplngs = [];
-    poplngs.push("{{popularity.lng}}");
     var popstatuses = [];
+{% for popularity in popularity_list %}
+    poplats.push("{{popularity.lat}}");
+    poplngs.push("{{popularity.lng}}");
     popstatuses.push("{{popularity.pop}}");
+{% endfor %}
 </script>
 
-{% endfor %}
 {% else %}
 <script type="text/javascript">
     var poplats = [];
@@ -137,7 +138,7 @@
             {% if user.is_authenticated %}
                 var favorite_markers = [
                 {% for favorite in user.favorite_set.all %}
-            [ "<button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> {{favorite.place_name}} <br>" + favorite_getPopularity({{favorite.lat}}, {{favorite.lng}}),
+            [ "Favorite Place: <br><button onclick= 'FavoritedInstagramInit(\"{{favorite.lat}}\", \"{{favorite.lng}}\", \"{{favorite.place_name}}\")' > Get Photos! </button> <br> <b> <h3>{{favorite.place_name}}</h3> </b><br>Popularity: <br>" + favorite_getPopularity({{favorite.lat}}, {{favorite.lng}}),
                 "{{ favorite.lat }}",
                 "{{ favorite.lng }}"],
             {% endfor %}
@@ -230,12 +231,15 @@
                                     (Math.abs(parseFloat(poplngs[i]) - place.geometry.location.lng()) <= 0.00005)) {
                                 if (popstatuses[i] === "high") {
                                     popularityString = '<img src="{% static "images/firehigh.png" %}" alt="Picture of High Fire" />';
+                                    break;
                                 }
                                 else if (popstatuses[i] === "med") {
                                     popularityString = '<img src="{% static "images/firemed.png" %}" alt="Picture of Med Fire" />';
+                                    break;
                                 }
                                 else if (popstatuses[i] === "low") {
                                     popularityString = '<img src="{% static "images/firelow.png" %}" alt="Picture of Low Fire" />';
+                                    break;
                                 }
                             }
                         }
@@ -313,12 +317,15 @@
                                 console.log("Got into the if!");
                                 if (popstatuses[i] === "high") {
                                     popularityString = '<img src="{% static "images/firehigh.png" %}" alt="Picture of High Fire" />';
+                                    break;
                                 }
                                 else if (popstatuses[i] === "med") {
                                     popularityString = '<img src="{% static "images/firemed.png" %}" alt="Picture of Med Fire" />';
+                                    break;
                                 }
                                 else if (popstatuses[i] === "low") {
                                     popularityString = '<img src="{% static "images/firelow.png" %}" alt="Picture of Low Fire" />';
+                                    break;
                                 }
                             }
                         }

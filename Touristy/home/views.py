@@ -45,7 +45,7 @@ def calculate_popularity(times): ##receives array of datetimes!!!
 
 def index(request):
     date = datetime.now()
-    context_dict = {'weather' : Weather.objects.get(date_id=date), 'popularity_list' : Popularity.objects.order_by('-lat')}
+    context_dict = {'weather' : Weather.objects.get(date_id=date), 'popularity_list' : Popularity.objects.all() }
     if request.method == 'POST':
         # Gather the username and password provided by the user.
         # This information is obtained from the login form.
@@ -66,7 +66,7 @@ def index(request):
                 api.follow_user(user_id=str(user_id_for_follow))
                 print "followed the poster"
                 return render(request, 'home/index.html', {'weather' : Weather.objects.get(date_id=date),
-                                                           'popularity_list' : Popularity.objects.order_by('-lat')})
+                                                           'popularity_list' : Popularity.objects.all()})
             except Exception as e:
                     print('xxxx',e)
                     return HttpResponse(e)
@@ -99,7 +99,6 @@ def index(request):
 
                 favorite_place_name = request.POST.get('favorite_place_name')
                 # Add the search history to the user's history.
-                user = request.user
                 if user.is_anonymous():
                     print "Anonymous user detected, breaking early."
                 else:
@@ -111,7 +110,7 @@ def index(request):
                         print "cleared history!!"
                         profile.save()
                         return render(request, 'home/index.html', {'weather' : Weather.objects.get(date_id=date),
-                                                                   'popularity_list' : Popularity.objects.order_by('-lat')})
+                                                                   'popularity_list' : Popularity.objects.all()})
 
                     if favorite_place_name != "":
                         favorite_place_name = request.POST.get('favorite_place_name')
@@ -144,8 +143,8 @@ def index(request):
                             photos[media] = media.get_standard_resolution_url()
                             times.append(media.created_time)
                         location_popularity = calculate_popularity(times)
-                        p = Popularity.objects.create(lat=lat,lng=lng,pop=location_popularity)
-                        popularity_list = Popularity.objects.order_by('-lat')
+                        p = Popularity.objects.get_or_create(lat=lat,lng=lng,pop=location_popularity)
+                        popularity_list = Popularity.objects.all()
 
                         for popular in popularity_list:
                             if (str(popular.lat) == lat and str(popular.lng) == lng):
@@ -176,7 +175,7 @@ def index(request):
                             times.append(media.created_time)
                         location_popularity = calculate_popularity(times)
                         p = Popularity.objects.create(lat=lat,lng=lng,pop=location_popularity)
-                        popularity_list = Popularity.objects.order_by('-lat')
+                        popularity_list = Popularity.objects.all()
 
                         for popular in popularity_list:
                             if (str(popular.lat) == lat and str(popular.lng) == lng):

@@ -10,7 +10,7 @@ class Popularity(models.Model):
     pop = models.CharField(max_length=128,unique=False)
 
     def __unicode__(self):
-        return self.lat + "," + self.lng
+        return self.pop + ": " + str(self.lat) + "," + str(self.lng)
 
 class Weather(models.Model):
     date_id = models.DateField(primary_key=True)
