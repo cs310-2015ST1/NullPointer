@@ -5,6 +5,7 @@ from datetime import datetime
 from django.core.management import call_command
 from django.test import Client
 from home.views import index
+from login.models import Favorite
 from django.contrib.auth.models import AnonymousUser, User
 
 
@@ -80,3 +81,30 @@ class UserTest(TestCase):
             fail("Should NOT have had clear history since it's an Anon.")
 
 
+
+class FavoriteTest(TestCase):
+    def setUp(self):
+        call_command('parse_weather')
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='test_user', email='lol@lol.com', password='top_secret') 
+        self.user_2 = User.objects.create_user(
+            username='test_user_2', email='lol@lol.com', password='top_secret') 
+
+        self.test_user_favorite = Favorite.objects.get_or_create(user_profile=self.user, place_name="My House", lat=49, lng=-123, content_string="My House")
+
+    def test_favorite_on_one_user_only(self):
+        try:
+            fav = Favorite.objects.get(user_profile=self.user)
+        except:
+            self.fail("The object should have been able to be found!! We created it on user...")
+
+	try:
+            fav = Favorite.objects.get(user_profile=self.user_2)
+            self.fail("User 2 has no favorites, so we should not have been able to get it...")
+        except:
+            pass
+
+    
+
+        

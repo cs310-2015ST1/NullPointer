@@ -87,8 +87,8 @@ STATIC_PATH = os.path.join(BASE_DIR,'static')
 
 STATIC_URL = '/static/' # You may find this is already defined as such.
 
-#ADMIN_STATIC_URL = '/static/admin/'
-#ADMIN_STATIC_PATH = '/usr/local/lib/python2.7/dist-packages/django/contrib/admin' + ADMIN_STATIC_URL
+ADMIN_STATIC_URL = '/static/admin/'
+ADMIN_STATIC_PATH = '/usr/local/lib/python2.7/dist-packages/django/contrib/admin' + ADMIN_STATIC_URL
 STATICFILES_DIRS = (
-    STATIC_PATH,
+    STATIC_PATH, ADMIN_STATIC_PATH
 )

@@ -422,7 +422,7 @@
     {% if photos %}
     <h1> Photos from that area! </h1> <br>
     {% for media,photo in photos.items  %}
-    <img src="{{ photo }}" alt="Photo" width="190">
+    <img src="{{ photo }}" alt="Photo" width="350">
 
     <form id="likable" method="post" action="/home/">
         {% csrf_token %}
