@@ -2,6 +2,8 @@
 # Touristy
 # TODO for Friday May 22nd
 
+WEBSITE URL:
+http://touristy.no-ip.org/
 
 1. Name of App
 2. User stories
