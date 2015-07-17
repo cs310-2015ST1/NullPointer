@@ -362,10 +362,12 @@
                 document.getElementById('lat').value = lat;
                 document.getElementById('lng').value = lng;
                 document.getElementById('search_value').value = place_name;
+                {% if user.is_authenticated %}
                 if (document.getElementById('bool_favorite_place').checked) {
                     document.getElementById('favorite_place_name').value = place_name;
                     document.getElementById('favorite_place_content_string').value = place_name;
                 }
+                {% endif %}
                 document.getElementById("instagram_lat_lng").submit();
             }
         }

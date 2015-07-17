@@ -285,7 +285,7 @@
                                     +this.getPosition().lng()
                                     + '\', \''
                                     +this.getTitle()
-                                    +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
+                                    +'\')">more Photos!</button><br> {%if user.is_authenticated %} <input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite? {%endif%}'
                                     + '<p>'+popularityString+'</p>';
 
                             infowindow.setContent(dataString);
