@@ -285,7 +285,7 @@
                                     +this.getPosition().lng()
                                     + '\', \''
                                     +this.getTitle()
-                                    +'\')">more Photos!</button><br><input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite?'
+                                    +'\')">more Photos!</button><br> {%if user.is_authenticated %} <input id = "bool_favorite_place" type="checkbox" name="bool_favorite_place"/>Favorite? {%endif%}'
                                     + '<p>'+popularityString+'</p>';
 
                             infowindow.setContent(dataString);
@@ -388,7 +388,7 @@
 
     <p>Touristy is a simple app that lets you obtain pictures from around any place you can find in Vancouver. <br>
         To use simply login to Instagram and search away! Select a place that interests you and then click 'Get Photos!', it's that simple.
-        <br>
+        <br><br>
         Vancouver's Weather: {{ weather }}<br>
         <br> <br></p>
 </div>

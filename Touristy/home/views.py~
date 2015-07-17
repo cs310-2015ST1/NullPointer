@@ -45,7 +45,8 @@ def calculate_popularity(times): ##receives array of datetimes!!!
 
 def index(request):
     date = datetime.now()
-    context_dict = {'weather' : Weather.objects.get(date_id=date), 'popularity_list' : Popularity.objects.all()
+    context_dict = {'weather' : Weather.objects.get(date_id=date), 'popularity_list' : Popularity.objects.all() }
+    user = request.user
     if request.method == 'POST':
         # Gather the username and password provided by the user.
         # This information is obtained from the login form.

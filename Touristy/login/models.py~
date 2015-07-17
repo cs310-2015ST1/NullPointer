@@ -16,7 +16,7 @@ class Favorite(models.Model):
 
 
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display('user_profile', 'place_name', 'lat', 'lng', 'content_string')
+    list_display = ('user_profile', 'place_name', 'lat', 'lng', 'content_string')
 
 
 class UserProfile(models.Model):

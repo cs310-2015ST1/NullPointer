@@ -9,6 +9,7 @@ from django.contrib.auth.models import AnonymousUser, User
 
 
 # Create your tests here.
+import os
 
 
 class PopularityTestCase(TestCase):

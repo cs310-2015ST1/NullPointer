@@ -15,10 +15,6 @@ class Favorite(models.Model):
         return self.place_name
 
 
-class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('user_profile', 'place_name', 'lat', 'lng', 'content_string')
-
-
 class UserProfile(models.Model):
     # This line is required. Links UserProfile to a User model instance.
     user = models.OneToOneField(User)

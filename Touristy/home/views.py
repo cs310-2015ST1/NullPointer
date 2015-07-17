@@ -46,6 +46,7 @@ def calculate_popularity(times): ##receives array of datetimes!!!
 def index(request):
     date = datetime.now()
     context_dict = {'weather' : Weather.objects.get(date_id=date), 'popularity_list' : Popularity.objects.all() }
+    user = request.user
     if request.method == 'POST':
         # Gather the username and password provided by the user.
         # This information is obtained from the login form.
@@ -145,12 +146,6 @@ def index(request):
                         location_popularity = calculate_popularity(times)
                         p = Popularity.objects.get_or_create(lat=lat,lng=lng,pop=location_popularity)
                         popularity_list = Popularity.objects.all()
-
-                        for popular in popularity_list:
-                            if (str(popular.lat) == lat and str(popular.lng) == lng):
-                                popular.delete()
-                                print 'overwrite popularity'
-                        p.save()
                         context_dict = {'access_token': access_token, 'photos': photos,
                                         'weather' : Weather.objects.get(date_id=date), 'popularity_list': popularity_list}
                     except Exception as e:
@@ -174,14 +169,9 @@ def index(request):
                             photos[media] = media.get_standard_resolution_url()
                             times.append(media.created_time)
                         location_popularity = calculate_popularity(times)
-                        p = Popularity.objects.create(lat=lat,lng=lng,pop=location_popularity)
+                        p = Popularity.objects.get_or_create(lat=lat,lng=lng,pop=location_popularity)
                         popularity_list = Popularity.objects.all()
 
-                        for popular in popularity_list:
-                            if (str(popular.lat) == lat and str(popular.lng) == lng):
-                                popular.delete()
-                                print 'overwrite popularity'
-                        p.save()
                         context_dict = {'access_token': access_token, 'photos': photos,
                                         'weather' : Weather.objects.get(date_id=date), 'popularity_list': popularity_list}
                     except Exception as e:
